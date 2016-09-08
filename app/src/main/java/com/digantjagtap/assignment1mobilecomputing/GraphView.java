@@ -66,7 +66,8 @@ public class GraphView extends View {
 		paint.setTextAlign(Align.LEFT);
 		int vers = verlabels.length - 1;
 		for (int i = 0; i < verlabels.length; i++) {
-			paint.setColor(Color.DKGRAY);
+			// paint.setColor(Color.DKGRAY);
+			paint.setColor(Color.LTGRAY);
 			float y = ((graphheight / vers) * i) + border;
 			canvas.drawLine(horstart, y, width, y, paint);
 			// paint.setColor(Color.WHITE);
@@ -76,7 +77,8 @@ public class GraphView extends View {
 		}
 		int hors = horlabels.length - 1;
 		for (int i = 0; i < horlabels.length; i++) {
-			paint.setColor(Color.DKGRAY);
+			// paint.setColor(Color.DKGRAY);
+			paint.setColor(Color.LTGRAY);
 			float x = ((graphwidth / hors) * i) + horstart;
 			canvas.drawLine(x, height - border, x, border, paint);
 			paint.setTextAlign(Align.CENTER);
@@ -94,7 +96,9 @@ public class GraphView extends View {
 		canvas.drawText(title, (graphwidth / 2) + horstart, border - 4, paint);
 
 		if (max != min) {
-			paint.setColor(Color.LTGRAY);
+			// paint.setColor(Color.LTGRAY);
+			// paint.setColor(Color.LTGRAY);
+			paint.setColor(Color.parseColor("#00C853"));
 			if (type == BAR) {
 				float datalength = values.length;
 				float colwidth = (width - (2 * border)) / datalength;
