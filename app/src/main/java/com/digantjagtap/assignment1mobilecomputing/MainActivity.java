@@ -1,12 +1,16 @@
 package com.digantjagtap.assignment1mobilecomputing;
 
+import android.annotation.TargetApi;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.view.Gravity;
+import android.support.v7.app.ActionBar.LayoutParams;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -28,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Handler mHandler;
 
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,9 +43,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonStop.setOnClickListener(this);
 
         gv = new GraphView(this, values, "Matlab UI", horlabels, verlabels, GraphView.LINE);
-       //  gv.setBackgroundColor(Color.parseColor("#EEEEEE"));
         base = (LinearLayout) findViewById(R.id.base);
-        gv.setLayoutParams(new LinearLayout.LayoutParams(400, 370));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+      //  params.width = 400;
+        params.height = 370;
+        params.setMarginStart(20);
+        params.setMarginEnd(20);
+        params.topMargin = 20;
+        params.gravity = Gravity.CENTER;
+        gv.setLayoutParams(params);
         base.addView(gv);
         graphRunning = true;
         mHandler = new Handler();
