@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     boolean graphRunning;
 
-    private Handler mHandler;
+    private Handler handler;
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gv = new GraphView(this, values, "Matlab UI", horlabels, verlabels, GraphView.LINE);
         base = (LinearLayout) findViewById(R.id.base);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-      //  params.width = 400;
         params.height = 370;
         params.setMarginStart(20);
         params.setMarginEnd(20);
@@ -54,8 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gv.setLayoutParams(params);
         base.addView(gv);
         graphRunning = true;
-        mHandler = new Handler();
-       // mHandler.post(mUpdate);
+        handler = new Handler();
     }
 
     private Runnable mUpdate = new Runnable() {
@@ -73,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for(i = 0;i<10;i++)   {
                 values[i] = (float)Math.random()*5;
             }
-                mHandler.postDelayed(this, 200);
+                handler.postDelayed(this, 200);
             }
         }
     };
@@ -88,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for (i = 0; i < 50; i++) {
                     values[i] = (float)Math.random()*5;
                 }
-                mHandler.post(mUpdate);
+                handler.post(mUpdate);
                 buttonRun.setEnabled(false);
                 break;
             }
