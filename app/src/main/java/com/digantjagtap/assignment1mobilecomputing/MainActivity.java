@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float[] oldValues = new float[50];
     float[] emptyValues = new float[0];
     int i;
-    String[] horlabels = new String[]{"0", "1", "2", "3", "4", "5"};
-    String[] verlabels = new String[]{"5", "4", "3", "2","1","0"};
+    String[] horLabels = new String[]{"0", "1", "2", "3", "4", "5"};
+    String[] verLabels = new String[]{"5", "4", "3", "2","1","0"};
 
     boolean graphRunning;
 
@@ -42,13 +42,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonRun.setOnClickListener(this);
         buttonStop.setOnClickListener(this);
 
-        gv = new GraphView(this, values, "Matlab UI", horlabels, verlabels, GraphView.LINE);
+        gv = new GraphView(this, values, "Matlab UI", horLabels, verLabels, GraphView.LINE);
         base = (LinearLayout) findViewById(R.id.base);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        params.height = 370;
-        params.setMarginStart(20);
-        params.setMarginEnd(20);
-        params.topMargin = 20;
+        params.setMargins(30,20,30,40);
         params.gravity = Gravity.CENTER;
         gv.setLayoutParams(params);
         base.addView(gv);
