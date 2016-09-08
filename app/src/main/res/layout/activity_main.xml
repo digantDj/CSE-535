@@ -6,7 +6,7 @@
     android:id="@+id/base"
     android:gravity="fill"
     android:padding="30dp"
-    android:background="#9fa6ad">
+    android:background="#FAFAFA">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

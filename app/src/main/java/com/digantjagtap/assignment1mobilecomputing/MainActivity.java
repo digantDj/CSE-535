@@ -1,5 +1,6 @@
 package com.digantjagtap.assignment1mobilecomputing;
 
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,9 +15,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout base;
 
     GraphView gv;
-    float[] values = new float[100];
-    String[] horlabels = new String[]{"0", "1", "2", "3", "4", "5", "6","7","8","9","10"};
-    String[] verlabels = new String[]{"10","9","8","7", "6", "5", "4", "3", "2","1","0"};
+    float[] values = new float[50];
+    float[] emptyValues = new float[0];
+    String[] horlabels = new String[]{"0", "1", "2", "3", "4", "5"};
+    String[] verlabels = new String[]{"5", "4", "3", "2","1","0"};
 
     boolean graphRunning;
 
@@ -43,17 +45,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Runnable mUpdate = new Runnable() {
         public void run() {
-            for (int i = 0; i < 100; i++) {
-                values[i] = (float) Math.random()*10;
+            for (int i = 0; i < 50; i++) {
+                values[i] = (float) Math.random()*5;
                 System.out.println(values[i]);
             }
 
-            gv.setValues(values);
-            base.removeView(gv);
-            base.addView(gv);
-            if(graphRunning)
-            mHandler.postDelayed(this, 100);
 
+            if(graphRunning) {
+                gv.setValues(values);
+                gv.invalidate();
+                mHandler.postDelayed(this, 400);
+            }
         }
     };
 
@@ -65,14 +67,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Called when Run Button pressed
                 graphRunning=true;
                 mHandler.post(mUpdate);
+                buttonRun.setEnabled(false);
                 break;
             }
 
             case R.id.buttonStop: {
                 // Called when Stop Button pressed
                 graphRunning=false;
-                // base.removeView(gv);
-               // base.addView(gv);
+                buttonRun.setEnabled(true);
+                gv.setValues(emptyValues);
+                gv.invalidate();
                 break;
             }
         }
