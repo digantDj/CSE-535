@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for(i = 0;i<10;i++)   {
                 values[i] = (float)Math.random()*5;
             }
-                handler.postDelayed(this, 200);
+                handler.postDelayed(this, 500);
             }
         }
     };
