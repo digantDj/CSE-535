@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,7 +19,7 @@ import java.util.Date;
  * Created by Mihir on 9/30/2016.
  */
 public class DBHelper extends SQLiteOpenHelper{
-    private static final String DB_NAME = "assignment2_1.db";
+    private static final String DB_NAME = Environment.getExternalStorageDirectory() + File.separator + "my.db";
     private static DBHelper dbHelper;
     private String tableName;
     private String COL2 = "Timestamp";
@@ -95,7 +96,6 @@ public class DBHelper extends SQLiteOpenHelper{
             cursor = db.rawQuery(selectQuery, null);
             db.setTransactionSuccessful(); //commit your changes
         } catch (Exception e) {
-            System.out.print("Error is " + e);
             //report problem
         }
         Acceleromter acceleromter = new Acceleromter();
@@ -120,11 +120,7 @@ public class DBHelper extends SQLiteOpenHelper{
             }
             cursor.close();
         }catch(Exception e){
-           /* x  = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            y  = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            z  = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            Toast.makeText(context.getApplicationContext(), "Please wait 10 secs for database to Update!!" , Toast.LENGTH_LONG).show();
-            */
+            //report problem
         } finally {
             acceleromter.xValues = x;
             acceleromter.yValues = y;

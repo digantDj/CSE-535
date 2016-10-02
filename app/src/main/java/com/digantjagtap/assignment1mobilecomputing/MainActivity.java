@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String[] horLabels = new String[]{"0", "1", "2", "3", "4", "5"};
     String[] verLabels = new String[]{"5", "4", "3", "2","1","0"};
 
-    boolean graphRunning;
+    boolean graphRunning = false;
     DBHelper myDB;
     MyReceiver myReceiver;
     private Handler handler;
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                       // db.endTransaction();
+
                     }
                 }catch (SQLException e){
 
@@ -134,8 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         gv = new GraphView(this, xValues, yValues, zValues, "Matlab UI", horLabels, verLabels, GraphView.LINE);
         fLayout  = (FrameLayout) findViewById(R.id.frame);
-        fLayout.addView(gv);
-        graphRunning = true;
+
         handler = new Handler();
     }
 
@@ -150,19 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 gv.setValues(xValues, yValues, zValues);
 
-                //gv.setValues(values);
                 gv.invalidate();
-
-                for(i = 0;i<40;i++)   {
-                    oldValues[i+10] = values[i];
-                }
-                for (i = 10; i < 50; i++) {
-                    values[i] = oldValues[i];
-                }
-
-                for(i = 0;i<10;i++)   {
-                    values[i] = (float)Math.random()*5;
-                }
                 handler.postDelayed(this, 1000);
             }
         }
@@ -173,12 +160,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case  R.id.buttonRun: {
-                // Called when Run Button pressed
-                graphRunning=true;
-
-                for (i = 0; i < 50; i++) {
-                    values[i] = (float)Math.random()*5;
+                if (gv.getParent() == null) {
+                    fLayout.addView(gv);
                 }
+                if (graphRunning) {
+                    return;
+                }
+                graphRunning=true;
                 handler.post(mUpdate);
                 buttonRun.setEnabled(false);
                 break;
@@ -186,10 +174,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.buttonStop: {
                 // Called when Stop Button pressed
+                if (!graphRunning) {
+                    return;
+                }
+                fLayout.removeView(gv);
                 graphRunning=false;
                 buttonRun.setEnabled(true);
-                gv.setValues(emptyX, emptyY, emptyZ);
-                gv.invalidate();
+
                 break;
             }
         }
@@ -210,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (!isInsertDone) {
                     Toast.makeText(MainActivity.this, "Unable to insert", Toast.LENGTH_SHORT).show();
                 }
-               // db.execSQL("insert into "+TABLE_NAME+"(timeStamp, x_pos, y_pos, z_pos) values ('" + times + "', '" + datapassed1 + "', '" + datapassed2 + "', '" + datapassed3 + "' );");
+
             } catch (SQLiteException e) {
                 //report problem
             } finally {

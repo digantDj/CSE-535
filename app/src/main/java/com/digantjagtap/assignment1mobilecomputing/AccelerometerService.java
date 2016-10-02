@@ -69,7 +69,7 @@ public class AccelerometerService extends Service implements SensorEventListener
                 intent.putExtra("zValue",accelValuesZ);
 
                 sendBroadcast(intent);
-                //insertIntoDatabase();
+
             }
         }
     }
