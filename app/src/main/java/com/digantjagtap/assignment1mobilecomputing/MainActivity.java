@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float[] oldValues = new float[50];
     float[] emptyX, emptyY, emptyZ = new float[0];
     int i;
-    String[] horLabels = new String[]{"0", "1", "2", "3", "4", "5"};
-    String[] verLabels = new String[]{"5", "4", "3", "2","1","0"};
+    String[] horLabels = new String[]{"+10", "+8", "+6", "+4", "+2", "0", "-2", "-4", "-6", "-8", "-10"};
+    String[] verLabels = new String[]{"0", "2", "4", "6", "8", "10"};
 
     boolean graphRunning = false;
     DBHelper myDB;
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        gv = new GraphView(this, xValues, yValues, zValues, "Matlab UI", horLabels, verLabels, GraphView.LINE);
+        gv = new GraphView(this, xValues, yValues, zValues, "Accelermeter Data", horLabels, verLabels, GraphView.LINE);
         fLayout  = (FrameLayout) findViewById(R.id.frame);
 
         handler = new Handler();
