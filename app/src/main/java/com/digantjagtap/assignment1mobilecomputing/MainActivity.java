@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float[] zValues = new float[10];
     float[] values = new float[50];
     float[] oldValues = new float[50];
-    float[] emptyValues = new float[0];
+    float[] emptyX, emptyY, emptyZ = new float[0];
     int i;
     String[] horLabels = new String[]{"0", "1", "2", "3", "4", "5"};
     String[] verLabels = new String[]{"5", "4", "3", "2","1","0"};
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        gv = new GraphView(this, values, "Matlab UI", horLabels, verLabels, GraphView.LINE);
+        gv = new GraphView(this, xValues, yValues, zValues, "Matlab UI", horLabels, verLabels, GraphView.LINE);
         fLayout  = (FrameLayout) findViewById(R.id.frame);
         fLayout.addView(gv);
         graphRunning = true;
@@ -148,9 +148,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 yValues = acceleromter.yValues;
                 zValues = acceleromter.zValues;
 
-                //gv.setValues(xValues, yValues, zValues);
+                gv.setValues(xValues, yValues, zValues);
 
-                gv.setValues(values);
+                //gv.setValues(values);
                 gv.invalidate();
 
                 for(i = 0;i<40;i++)   {
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Called when Stop Button pressed
                 graphRunning=false;
                 buttonRun.setEnabled(true);
-                gv.setValues(emptyValues);
+                gv.setValues(emptyX, emptyY, emptyZ);
                 gv.invalidate();
                 break;
             }

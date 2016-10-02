@@ -6,6 +6,11 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.view.View;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * GraphView creates a scaled line or bar graph with x and y axis labels.
  * @author Arno den Hond
@@ -17,18 +22,27 @@ public class GraphView extends View {
 	public static boolean LINE = true;
 
 	private Paint paint;
-	private float[] values;
+	//private float[] values;
+	private float[] xvalues, yvalues, zvalues;
 	private String[] horlabels;
 	private String[] verlabels;
 	private String title;
 	private boolean type;
 
-	public GraphView(Context context, float[] values, String title, String[] horlabels, String[] verlabels, boolean type) {
+	public GraphView(Context context, float[] xvalues, float[] yvalues, float[] zvalues, String title, String[] horlabels, String[] verlabels, boolean type) {
 		super(context);
-		if (values == null)
-			values = new float[0];
+		if (xvalues == null)
+			xvalues = new float[0];
 		else
-			this.values = values;
+			this.xvalues = xvalues;
+		if (yvalues == null)
+			yvalues = new float[0];
+		else
+			this.yvalues = yvalues;
+		if (zvalues == null)
+			zvalues = new float[0];
+		else
+			this.zvalues = zvalues;
 		if (title == null)
 			title = "";
 		else
@@ -45,9 +59,12 @@ public class GraphView extends View {
 		paint = new Paint();
 	}
 
-	public void setValues(float[] newValues)
+	public void setValues(float[] xvalues, float[] yvalues, float[] zvalues)
 	{
-		this.values = newValues;
+		this.xvalues = xvalues;
+		this.yvalues = yvalues;
+		this.zvalues = zvalues;
+
 	}
 
 	@Override
@@ -92,52 +109,75 @@ public class GraphView extends View {
 
 		if (max != min) {
 			paint.setColor(Color.LTGRAY);
-			if (type == BAR) {
-				float datalength = values.length;
+			/*if (type == BAR) {
+				float datalength = xvalues.length;
 				float colwidth = (width - (2 * border)) / datalength;
-				for (int i = 0; i < values.length; i++) {
+				for (int i = 0; i < xvalues.length; i++) {
 					float val = values[i] - min;
 					float rat = val / diff;
 					float h = graphheight * rat;
 					canvas.drawRect((i * colwidth) + horstart, (border - h) + graphheight, ((i * colwidth) + horstart) + (colwidth - 1), height - (border - 1), paint);
 				}
-			} else {
-				float datalength = values.length;
+			} else {*/
+				float datalength = xvalues.length;
 				float colwidth = (width - (2 * border)) / datalength;
 				float halfcol = colwidth / 2;
 				float lasth = 0;
-				for (int i = 0; i < values.length; i++) {
-					float val = values[i] - min;
-					float rat = val / diff;
-					float h = graphheight * rat;
-					if (i > 0)
-						paint.setColor(Color.GREEN);
-						paint.setStrokeWidth(2.0f);
-
-						canvas.drawLine(((i - 1) * colwidth) + (horstart + 1) + halfcol, (border - lasth) + graphheight, (i * colwidth) + (horstart + 1) + halfcol, (border - h) + graphheight, paint);
-					lasth = h;
-				}
-			}
+				plotValue(canvas, border, horstart, min, diff, graphheight, colwidth, halfcol, lasth, xvalues, Color.GREEN);
+				plotValue(canvas, border, horstart, min, diff, graphheight, colwidth, halfcol, lasth, yvalues, Color.RED);
+				plotValue(canvas, border, horstart, min, diff, graphheight, colwidth, halfcol, lasth, zvalues, Color.YELLOW);
+			//}
 		}
 	}
 
-	private float getMax() {
-		float largest = Integer.MIN_VALUE;
-		for (int i = 0; i < values.length; i++)
-			if (values[i] > largest)
-				largest = values[i];
+	private void plotValue(Canvas canvas, float border, float horstart, float min, float diff, float graphheight, float colwidth, float halfcol, float lasth, float[] values, int color) {
+		for (int i = 0; i < values.length; i++) {
+            float val = values[i] - min;
+            float rat = val / diff;
+            float h = graphheight * rat;
+            if (i > 0)
+                paint.setColor(color);
+                paint.setStrokeWidth(2.0f);
 
-		//largest = 3000;
+                canvas.drawLine(((i - 1) * colwidth) + (horstart + 1) + halfcol, (border - lasth) + graphheight, (i * colwidth) + (horstart + 1) + halfcol, (border - h) + graphheight, paint);
+            lasth = h;
+        }
+	}
+
+	private float getMax() {
+
+		float largest = Integer.MIN_VALUE;
+		for (int i = 0; i < xvalues.length; i++)
+			if (xvalues[i] > largest)
+				largest = xvalues[i];
+
+		for (int i = 0; i < yvalues.length; i++)
+			if (yvalues[i] > largest)
+				largest = yvalues[i];
+		for (int i = 0; i < zvalues.length; i++)
+			if (zvalues[i] > largest)
+				largest = zvalues[i];
+
 		return largest;
 	}
 
 	private float getMin() {
 		float smallest = Integer.MAX_VALUE;
-		for (int i = 0; i < values.length; i++)
-			if (values[i] < smallest)
-				smallest = values[i];
+		for (int i = 0; i < xvalues.length; i++)
+			if (xvalues[i] < smallest)
+				smallest = xvalues[i];
 
-		//smallest = 0;
+		for (int i = 0; i < yvalues.length; i++)
+			if (yvalues[i] < smallest)
+				smallest = yvalues[i];
+
+
+
+		for (int i = 0; i < zvalues.length; i++)
+			if (zvalues[i] < smallest)
+				smallest = zvalues[i];
+
+
 		return smallest;
 	}
 
