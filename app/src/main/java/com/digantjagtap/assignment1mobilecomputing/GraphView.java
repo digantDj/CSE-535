@@ -52,7 +52,7 @@ public class GraphView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		float border = 20;
+		float border = 35;
 		float horstart = border * 2;
 		float height = getHeight();
 		float width = getWidth() - 1;
@@ -66,19 +66,15 @@ public class GraphView extends View {
 		paint.setTextAlign(Align.LEFT);
 		int vers = verlabels.length - 1;
 		for (int i = 0; i < verlabels.length; i++) {
-			// paint.setColor(Color.DKGRAY);
-			paint.setColor(Color.LTGRAY);
+			paint.setColor(Color.DKGRAY);
 			float y = ((graphheight / vers) * i) + border;
 			canvas.drawLine(horstart, y, width, y, paint);
-			// paint.setColor(Color.WHITE);
-			// Changing Text color
-			paint.setColor(Color.BLACK);
+			paint.setColor(Color.WHITE);
 			canvas.drawText(verlabels[i], 0, y, paint);
 		}
 		int hors = horlabels.length - 1;
 		for (int i = 0; i < horlabels.length; i++) {
-			// paint.setColor(Color.DKGRAY);
-			paint.setColor(Color.LTGRAY);
+			paint.setColor(Color.DKGRAY);
 			float x = ((graphwidth / hors) * i) + horstart;
 			canvas.drawLine(x, height - border, x, border, paint);
 			paint.setTextAlign(Align.CENTER);
@@ -86,9 +82,8 @@ public class GraphView extends View {
 				paint.setTextAlign(Align.RIGHT);
 			if (i==0)
 				paint.setTextAlign(Align.LEFT);
-			// paint.setColor(Color.WHITE);
-			// Changing Text color
-			paint.setColor(Color.BLACK);
+			paint.setColor(Color.WHITE);
+			paint.setTextSize(30);
 			canvas.drawText(horlabels[i], x, height - 4, paint);
 		}
 
@@ -96,9 +91,7 @@ public class GraphView extends View {
 		canvas.drawText(title, (graphwidth / 2) + horstart, border - 4, paint);
 
 		if (max != min) {
-			// paint.setColor(Color.LTGRAY);
-			// paint.setColor(Color.LTGRAY);
-			paint.setColor(Color.parseColor("#00C853"));
+			paint.setColor(Color.LTGRAY);
 			if (type == BAR) {
 				float datalength = values.length;
 				float colwidth = (width - (2 * border)) / datalength;
@@ -118,9 +111,7 @@ public class GraphView extends View {
 					float rat = val / diff;
 					float h = graphheight * rat;
 					if (i > 0)
-						//paint.setColor(Color.GREEN);
-						// Changing Graph's Line Color
-						paint.setColor(Color.parseColor("#00C853"));
+						paint.setColor(Color.GREEN);
 						paint.setStrokeWidth(2.0f);
 
 						canvas.drawLine(((i - 1) * colwidth) + (horstart + 1) + halfcol, (border - lasth) + graphheight, (i * colwidth) + (horstart + 1) + halfcol, (border - h) + graphheight, paint);
