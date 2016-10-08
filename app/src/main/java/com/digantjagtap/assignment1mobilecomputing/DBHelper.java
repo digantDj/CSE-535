@@ -3,7 +3,6 @@ package com.digantjagtap.assignment1mobilecomputing;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -129,6 +128,4 @@ public class DBHelper extends SQLiteOpenHelper{
 
         return acceleromter;
     }
-
-
 }
