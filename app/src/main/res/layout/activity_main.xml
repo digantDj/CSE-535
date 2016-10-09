@@ -109,13 +109,27 @@
 
             </RadioGroup>
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Submit"
-                android:id="@+id/buttonSubmit"
-                android:textSize="12dp" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="37dp"
+                    android:text="ENABLE"
+                    android:id="@+id/buttonEnable"
+                    android:textSize="12dp" />
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:text="DISABLE"
+                    android:id="@+id/buttonDisable"
+                    android:textSize="12dp" />
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -138,7 +152,8 @@
                 android:layout_toRightOf="@+id/textView2"
                 android:layout_toEndOf="@+id/textView2"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:enabled="false" />
 
             <Button
                 android:layout_width="wrap_content"

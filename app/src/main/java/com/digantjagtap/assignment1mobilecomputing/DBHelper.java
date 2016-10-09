@@ -3,12 +3,10 @@ package com.digantjagtap.assignment1mobilecomputing;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,19 +36,17 @@ public class DBHelper extends SQLiteOpenHelper{
         this.tableName = "[" + tableName + "]";
     }
 
-    public static DBHelper getInstance(Context context, String tableName) throws IOException, SQLiteException {
+    public static DBHelper getInstance(Context context) throws IOException, SQLiteException {
         if (dbHelper == null){
             dbHelper = new DBHelper(context.getApplicationContext());
-            dbHelper.setTableName(tableName);
             db = dbHelper.getWritableDatabase();
-            dbHelper.onCreateTable();
         }
         return dbHelper;
     }
 
     public void onCreateTable() throws SQLiteException {
-        Toast.makeText(context.getApplicationContext(), "onCreateTable", Toast.LENGTH_SHORT).show();
-        db.execSQL("create table " + tableName + " ("
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ("
                 + " Timestamp text, "
                 + " xValue real, "
                 + " yValue real, "
@@ -59,15 +55,11 @@ public class DBHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Toast.makeText(context.getApplicationContext(), "on create database  " , Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //Toast.makeText(getApplicationContext(), "inside onUpgrade", Toast.LENGTH_LONG).show();
-        db.execSQL("Drop table if exists" + tableName);
-        onCreate(db);
+
     }
 
     public boolean insertAccelValues(float x, float y, float z) {
@@ -84,21 +76,19 @@ public class DBHelper extends SQLiteOpenHelper{
             return true;
         }
 
-        //String insertQuery = "INSERT INTO " + tableName + "(Timestamp, xValue, yValue, zValue) values(CURRENT_TIMESTAMP," + x +","+ y +","+ z + ")";
-        //db.execSQL(insertQuery);
     }
 
-    public Acceleromter getAccelValues() {
+    public Accelerometer getAccelValues() {
 
         Cursor cursor = null;
         String selectQuery = "SELECT  * FROM " + tableName + " ORDER BY TimeStamp DESC";;
         try {
             cursor = db.rawQuery(selectQuery, null);
-            db.setTransactionSuccessful(); //commit your changes
+            db.setTransactionSuccessful();
         } catch (Exception e) {
             //report problem
         }
-        Acceleromter acceleromter = new Acceleromter();
+        Accelerometer accelerometer = new Accelerometer();
         float[] x = new float[10];
         float[] y = new float[10];
         float[] z = new float[10];
@@ -115,19 +105,19 @@ public class DBHelper extends SQLiteOpenHelper{
                     z[i] = cursor.getFloat(cursor.getColumnIndex("zValue"));
                     i++;
                     cursor.moveToNext();
-                    //count++;
+
                 } while (i < 10);
             }
             cursor.close();
         }catch(Exception e){
             //report problem
         } finally {
-            acceleromter.xValues = x;
-            acceleromter.yValues = y;
-            acceleromter.zValues = z;
+            accelerometer.xValues = x;
+            accelerometer.yValues = y;
+            accelerometer.zValues = z;
         }
 
-        return acceleromter;
+        return accelerometer;
     }
 
 

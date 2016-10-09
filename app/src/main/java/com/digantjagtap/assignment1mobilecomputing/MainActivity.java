@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -21,8 +20,6 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import static android.widget.Toast.*;
-
 
 /**
  * MainActivity consists of Patient ID, Age, Patient Name and Sex. It has two buttons, Run and Stop
@@ -36,10 +33,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button buttonRun;
     Button buttonStop;
-    Button buttonSubmit;
+    Button buttonEnable, buttonDisable;
     LinearLayout base;
     FrameLayout fLayout;
-
+    Intent accelerometerService;
     SQLiteDatabase db;
     EditText patientID;
     EditText age;
@@ -60,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float[] oldValues = new float[50];
     float[] emptyX, emptyY, emptyZ = new float[0];
     int i;
-    String[] horLabels = new String[]{"+10", "+8", "+6", "+4", "+2", "0", "-2", "-4", "-6", "-8", "-10"};
-    String[] verLabels = new String[]{"0", "2", "4", "6", "8", "10"};
+    String[] horLabels = new String[]{"0", "2", "4", "6", "8", "10"};
+    String[] verLabels = new String[]{"+10", "+8", "+6", "+4", "+2", "0", "-2", "-4", "-6", "-8", "-10"};
 
     boolean graphRunning = false;
     DBHelper myDB;
@@ -82,13 +79,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         buttonRun = (Button)findViewById(R.id.buttonRun);
         buttonStop = (Button)findViewById(R.id.buttonStop);
-        buttonSubmit = (Button)findViewById(R.id.buttonSubmit);
+        buttonEnable = (Button)findViewById(R.id.buttonEnable);
+        buttonDisable = (Button)findViewById(R.id.buttonDisable);
+
         buttonRun.setOnClickListener(this);
         buttonStop.setOnClickListener(this);
 
 
 
-        buttonSubmit.setOnClickListener(new View.OnClickListener() {
+        buttonEnable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 patientIDText = patientID.getText().toString();
@@ -101,19 +100,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sexText = "Female";
                 }
                 tableName = patientIDText + "_" + ageText + "_" + patientNameText + "_" + sexText;
-                Toast.makeText(MainActivity.this, tableName, LENGTH_SHORT).show();
-
 
                 try{
                     try {
                         myReceiver = new MyReceiver();
-                        myDB = DBHelper.getInstance(MainActivity.this, tableName);
+                        myDB = DBHelper.getInstance(MainActivity.this);
+                        myDB.setTableName(tableName);
+                        myDB.onCreateTable();
                         IntentFilter intentFilter = new IntentFilter();
                         intentFilter.addAction(AccelerometerService.MY_ACTION);
                         registerReceiver(myReceiver, intentFilter);
-                        Intent startAccelerometerService = new Intent(MainActivity.this, AccelerometerService.class);
-                        startService(startAccelerometerService);
-
+                        accelerometerService = new Intent(MainActivity.this, AccelerometerService.class);
+                        startService(accelerometerService);
+                        buttonRun.setEnabled(true);
+                        graphRunning=false;
                     }
                     catch (SQLiteException e) {
                         Toast.makeText(MainActivity.this,"SQLiteException", Toast.LENGTH_LONG).show();
@@ -130,7 +130,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        buttonDisable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
 
         gv = new GraphView(this, xValues, yValues, zValues, "Accelermeter Data", horLabels, verLabels, GraphView.LINE);
         fLayout  = (FrameLayout) findViewById(R.id.frame);
@@ -142,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void run() {
             if(graphRunning) {
 
-                Acceleromter acceleromter = myDB.getAccelValues();
+                Accelerometer acceleromter = myDB.getAccelValues();
                 xValues = acceleromter.xValues;
                 yValues = acceleromter.yValues;
                 zValues = acceleromter.zValues;
