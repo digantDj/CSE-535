@@ -119,6 +119,4 @@ public class DBHelper extends SQLiteOpenHelper{
 
         return accelerometer;
     }
-
-
 }
