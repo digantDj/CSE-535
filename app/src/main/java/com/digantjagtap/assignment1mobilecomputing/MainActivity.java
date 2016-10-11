@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 buttonUpload.setEnabled(false);
                                 buttonDownload.setEnabled(false);
                                 buttonRun.setEnabled(false);
-                                Toast.makeText(MainActivity.this,"Begin Download",Toast.LENGTH_LONG).show();
+                                //Toast.makeText(MainActivity.this,"Begin Download",Toast.LENGTH_LONG).show();
                             }
                         });
                         downloadFile(DATABASE_LOCATION, "https://impact.asu.edu/CSE535Fall16Folder/UploadToServerGPS.php", DATABASE_NAME, buttonStop, buttonUpload, buttonDownload, buttonRun, gv, fLayout);
@@ -430,6 +430,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(MainActivity.this, "File Upload Completed", Toast.LENGTH_LONG).show();
+                            // Enable the other buttons after upload is complete.
+                            stopButton.setEnabled(true);
+                            uploadButton.setEnabled(true);
+                            downloadButton.setEnabled(true);
+                            runButton.setEnabled(true);
                         }
                     });
                 }
@@ -445,15 +450,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(MainActivity.this, "Error in File Upload" , Toast.LENGTH_LONG).show();
+                        // Enable the other buttons after upload is complete.
+                        stopButton.setEnabled(true);
+                        uploadButton.setEnabled(true);
+                        downloadButton.setEnabled(true);
+                        runButton.setEnabled(true);
                     }
                 });
                 Log.e("File upload Exception", "Exception : " + e.getMessage(), e);
             } finally{
-                // Enable the other buttons after upload is complete.
-                stopButton.setEnabled(true);
-                uploadButton.setEnabled(true);
-                downloadButton.setEnabled(true);
-                runButton.setEnabled(true);
+
             }
             return serverResponseCode;
 
@@ -519,6 +525,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(new Runnable() {
                 public void run() {
                     Toast.makeText(MainActivity.this, "File download complete", Toast.LENGTH_LONG).show();
+                    // Enable the other buttons after download is complete.
+                    stopButton.setEnabled(true);
+                    uploadButton.setEnabled(true);
+                    downloadButton.setEnabled(true);
+                    runButton.setEnabled(true);
                     // Plot the values from the downloaded DB on the graph.
                     base.removeView(gv);
                     // Downloaded values fetched here from the DB.
@@ -535,16 +546,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(new Runnable() {
                 public void run() {
                     Toast.makeText(MainActivity.this, "Error in File Download", Toast.LENGTH_LONG).show();
+                    // Enable the other buttons after download is complete.
+                    stopButton.setEnabled(true);
+                    uploadButton.setEnabled(true);
+                    downloadButton.setEnabled(true);
+                    runButton.setEnabled(true);
                 }
             });
 
             Log.e("File Download Exception", "error: " + e.getMessage(), e);
         }finally{
-            // Enable the other buttons after download is complete.
-            stopButton.setEnabled(true);
-            uploadButton.setEnabled(true);
-            downloadButton.setEnabled(true);
-            runButton.setEnabled(true);
+
         }
     }
 
