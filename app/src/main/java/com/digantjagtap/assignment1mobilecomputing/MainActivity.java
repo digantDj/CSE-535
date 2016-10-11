@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -135,11 +134,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void run() {
                         runOnUiThread(new Runnable() {
                             public void run() {
+                                // When uploading, no other operation can be done, so other buttons disabled.
                                 buttonStop.setEnabled(false);
                                 buttonUpload.setEnabled(false);
                                 buttonDownload.setEnabled(false);
                                 buttonRun.setEnabled(false);
-                                Toast.makeText(MainActivity.this,"uploading started.....",Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this,"Begin Upload",Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -156,11 +156,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void run() {
                         runOnUiThread(new Runnable() {
                             public void run() {
+                                // When downloading, no other operation can be done, so other buttons disabled.
                                 buttonStop.setEnabled(false);
                                 buttonUpload.setEnabled(false);
                                 buttonDownload.setEnabled(false);
                                 buttonRun.setEnabled(false);
-                                Toast.makeText(MainActivity.this,"checking file in server.....",Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this,"Begin Download",Toast.LENGTH_LONG).show();
                             }
                         });
                         downloadFile(DATABASE_LOCATION, "https://impact.asu.edu/CSE535Fall16Folder/UploadToServerGPS.php", DATABASE_NAME, buttonStop, buttonUpload, buttonDownload, buttonRun, gv, fLayout);
@@ -300,10 +301,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //@Begin upload
-    public int uploadFile(final String sourceFileUri, String strDestinationUri, String fileName, final Button stopButton, final Button uploadButton, final Button downloadButton, final Button recordButton) {
-        final String uploadErrorMsg = "Upload failed.";
-        //Referred to http://tinyurl.com/or8wql2
+    // Reference: http://androidexample.com/Upload_File_To_Server_-_Android_Example/index.php?view=article_discription&aid=83&aaid=106
+    public int uploadFile(final String sourceFileUri, String strDestinationUri, String fileName, final Button stopButton, final Button uploadButton, final Button downloadButton, final Button runButton) {
         HttpsURLConnection conn = null;
         DataOutputStream dos = null;
         String lineEnd = "\r\n";
@@ -322,22 +321,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void run() {
                     Toast.makeText(MainActivity.this, "Source File not exist :"
                             + sourceFileUri, Toast.LENGTH_LONG).show();
-                    //dispButton.setEnabled(true);
                     stopButton.setEnabled(true);
                     uploadButton.setEnabled(true);
                     downloadButton.setEnabled(true);
-                    recordButton.setEnabled(true);
+                    runButton.setEnabled(true);
                 }
             });
 
             return 0;
 
         } else {
+            //Upload the database file from device to server if it exists
             try {
 
                 // open a URL connection to the Servlet
                 FileInputStream fileInputStream = new FileInputStream(sourceFile);
-
 
                 // Create a trust manager that does not validate certificate chains
                 TrustManager[] trustAllCerts = new TrustManager[]{
@@ -356,16 +354,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                 };
 
-// Install the all-trusting trust manager
+                // Install the all-trusting trust manager
                 try {
                     SSLContext sc = SSLContext.getInstance("SSL");
                     sc.init(null, trustAllCerts, new SecureRandom());
                     HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
                 } catch (Exception e) {
-                    return 0;
-                }
-                URL url = new URL(strDestinationUri);
+                    e.printStackTrace();
 
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Error in File Upload", Toast.LENGTH_LONG).show();
+                            stopButton.setEnabled(true);
+                            uploadButton.setEnabled(true);
+                            downloadButton.setEnabled(true);
+                            runButton.setEnabled(true);
+                        }
+                    });
+                    Log.e("File upload Exception", "Exception : " + e.getMessage(), e);
+                }
+
+                URL url = new URL(strDestinationUri);
 
                 // Open a HTTP  connection to  the URL
                 conn = (HttpsURLConnection) url.openConnection();
@@ -392,9 +401,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 bufferSize = Math.min(bytesAvailable, maxBufferSize);
                 buffer = new byte[bufferSize];
 
-                // read file and write it into form...
+                // read file data into bytes in the buffer.
                 bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
+                // write the buffer data in the required data format
                 while (bytesRead > 0) {
 
                     dos.write(buffer, 0, bufferSize);
@@ -404,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 }
 
-                // send multipart form data necesssary after file data...
+                // send multipart form data necessary after file data.
                 dos.writeBytes(lineEnd);
                 dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 
@@ -412,70 +422,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 serverResponseCode = conn.getResponseCode();
                 String serverResponseMessage = conn.getResponseMessage();
 
-                Log.i("uploadFile", "HTTP Response is : "
+                Log.i("File Upload", "HTTP Response: "
                         + serverResponseMessage + ": " + serverResponseCode);
 
                 if (serverResponseCode == 200) {
 
                     runOnUiThread(new Runnable() {
                         public void run() {
-
-                            String msg = "File Upload Completed.";
-
-                            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
-                            //dispButton.setEnabled(true);
-                            stopButton.setEnabled(true);
-                            uploadButton.setEnabled(true);
-                            downloadButton.setEnabled(true);
-                            recordButton.setEnabled(true);
+                            Toast.makeText(MainActivity.this, "File Upload Completed", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
 
-                //close the streams //
+                //close the streams
                 fileInputStream.close();
                 dos.flush();
                 dos.close();
 
-            } catch (MalformedURLException ex) {
-                ex.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(MainActivity.this, uploadErrorMsg, Toast.LENGTH_LONG).show();
-                        //dispButton.setEnabled(true);
-                        stopButton.setEnabled(true);
-                        uploadButton.setEnabled(true);
-                        downloadButton.setEnabled(true);
-                        recordButton.setEnabled(true);
-                    }
-                });
-
-                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
             } catch (Exception e) {
                 e.printStackTrace();
 
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(MainActivity.this, uploadErrorMsg, Toast.LENGTH_LONG).show();
-                        //dispButton.setEnabled(true);
-                        stopButton.setEnabled(true);
-                        uploadButton.setEnabled(true);
-                        downloadButton.setEnabled(true);
-                        recordButton.setEnabled(true);
+                        Toast.makeText(MainActivity.this, "Error in File Upload" , Toast.LENGTH_LONG).show();
                     }
                 });
                 Log.e("File upload Exception", "Exception : " + e.getMessage(), e);
+            } finally{
+                // Enable the other buttons after upload is complete.
+                stopButton.setEnabled(true);
+                uploadButton.setEnabled(true);
+                downloadButton.setEnabled(true);
+                runButton.setEnabled(true);
             }
             return serverResponseCode;
 
-        } // End else block
+        }
     }
-    //@End upload
 
-    public void downloadFile(final String sourceFileUri, String strDestinationUri, String fileName, final Button stopButton, final Button uploadButton, final Button downloadButton, final Button recordButton, final GraphView gv, final FrameLayout base) {
-        final String downloadErrorMsg = "Download failed.";
-
+    public void downloadFile(final String sourceFileUri, String strDestinationUri, String fileName, final Button stopButton, final Button uploadButton, final Button downloadButton, final Button runButton, final GraphView gv, final FrameLayout base) {
         try {
 
             // Create a trust manager that does not validate certificate chains
@@ -505,44 +490,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(MainActivity.this, "Exception occurred", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "Error in File Download", Toast.LENGTH_LONG).show();
                         stopButton.setEnabled(false);
                         uploadButton.setEnabled(true);
                         downloadButton.setEnabled(true);
-                        recordButton.setEnabled(true);
+                        runButton.setEnabled(true);
                     }
                 });
             }
 
+            // Read the same DB file that we had uploaded to the same folder
             URL url = new URL("https://impact.asu.edu/CSE535Fall16Folder/my.db");
-            /* Open a connection to that URL. */
+            // Open a connection to that URL.
             HttpsURLConnection ucon = (HttpsURLConnection) url.openConnection();
-            /*
-            * Define InputStreams to read from the URLConnection.
-            */
             InputStream is = ucon.getInputStream();
             BufferedInputStream bis = new BufferedInputStream(is);
-            /*
-            * Read bytes to the Buffer until there is nothing more to read(-1).
-            */
+            // Read data in the form of bytes till end of file.
             ByteArrayOutputStream buffer = new ByteArrayOutputStream(50);
             int current = 0;
             while ((current = bis.read()) != -1) {
                 buffer.write((byte) current);
             }
-
-            /* Convert the Bytes read to a String. */
+            // Open the same DB file in the local and over write it with downloaded DB file from server
             FileOutputStream fos = new FileOutputStream(new File(Environment.getExternalStorageDirectory() + "/" + "my.db"));
+            // Write the bytes to the same local DB file.
             fos.write(buffer.toByteArray());
             fos.close();
             runOnUiThread(new Runnable() {
                 public void run() {
                     Toast.makeText(MainActivity.this, "File download complete", Toast.LENGTH_LONG).show();
-                    stopButton.setEnabled(true);
-                    uploadButton.setEnabled(true);
-                    downloadButton.setEnabled(true);
-                    recordButton.setEnabled(true);
+                    // Plot the values from the downloaded DB on the graph.
                     base.removeView(gv);
+                    // Downloaded values fetched here from the DB.
                     Accelerometer result = myDB.getAccelValues();
                     gv.setValues(result.xValues, result.yValues, result.zValues);
                     gv.invalidate();
@@ -550,48 +529,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
 
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(MainActivity.this, downloadErrorMsg, Toast.LENGTH_LONG).show();
-                    stopButton.setEnabled(true);
-                    uploadButton.setEnabled(true);
-                    downloadButton.setEnabled(true);
-                    recordButton.setEnabled(true);
-                }
-            });
-
-            Log.e("Download file to server", "error: " + e.getMessage(), e);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(MainActivity.this, downloadErrorMsg, Toast.LENGTH_LONG).show();
-                    stopButton.setEnabled(true);
-                    uploadButton.setEnabled(true);
-                    downloadButton.setEnabled(true);
-                    recordButton.setEnabled(true);
-                }
-            });
-
-            Log.e("Download file to server", "error: " + e.getMessage(), e);
         } catch (Exception e) {
             e.printStackTrace();
 
             runOnUiThread(new Runnable() {
                 public void run() {
-                    Toast.makeText(MainActivity.this, downloadErrorMsg, Toast.LENGTH_LONG).show();
-                    stopButton.setEnabled(true);
-                    uploadButton.setEnabled(true);
-                    downloadButton.setEnabled(true);
-                    recordButton.setEnabled(true);
+                    Toast.makeText(MainActivity.this, "Error in File Download", Toast.LENGTH_LONG).show();
                 }
             });
 
-            Log.e("Download file to server", "error: " + e.getMessage(), e);
+            Log.e("File Download Exception", "error: " + e.getMessage(), e);
+        }finally{
+            // Enable the other buttons after download is complete.
+            stopButton.setEnabled(true);
+            uploadButton.setEnabled(true);
+            downloadButton.setEnabled(true);
+            runButton.setEnabled(true);
         }
     }
 
