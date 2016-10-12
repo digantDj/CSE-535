@@ -263,14 +263,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.buttonStop: {
                 // Called when Stop Button pressed
+
                 if (!graphRunning) {
                     return;
                 }
+                stopService(accelerometerService);
                 fLayout.removeView(gv);
                 graphRunning=false;
                 buttonRun.setEnabled(true);
                 buttonDownload.setEnabled(true);
                 buttonUpload.setEnabled(true);
+
                 break;
             }
         }
